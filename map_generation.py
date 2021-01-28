@@ -110,7 +110,7 @@ def generate_map(width, height):
 
     return game_map
     
-if __name__ == "__init__":
+if __name__ == "__main__":
     for i in range(10000):
         width = 0
         height = 0
