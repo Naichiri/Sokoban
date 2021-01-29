@@ -7,19 +7,19 @@ import utils
 
 class Program:
     def __init__(self, argv):
-        self.mode = int(argv[1])
+        self.mode = argv[1]
         self.argv = argv[2:]
 
     def run(self):
         length = len(self.argv)
-        if self.mode == 1:
+        if self.mode == '1':
             if length == 0:
-                print("ERROR: Mode requires standard input")
+                print("ERROR: Mode requires input file specified in parameter")
             else:
                 data = np.load(self.argv[0])
                 for key in data:
                     print_output(sokoban.solve(data[key]))
-        elif self.mode == 2:
+        elif self.mode == '2':
             d = {}
             if length > 0:
                 n_maps = int(self.argv[0])
@@ -42,6 +42,15 @@ class Program:
                 output = search.search(map_problem)
                 print_output(output)
                 map_generation.visualize_field(field)
+                print('Press enter to continue...', end='')
+        elif self.mode == "-help":
+            print("Available execution parameters:\n", \
+                    "-help - displays this text\n", \
+                    "1 file.npyz - solves for numpy arrays compressed in the specified .npyz file\n", \
+                    "2 [n] [width length] [gdp] [fnp] - solves for n width x length maps which are generated randomly.\n", \
+                    "\tDefaultly solves one 10x10 map. Additional parameters tweak map generation, details in readme\n")
+        else:
+            print("ERROR: Unknown parameter, try running as:", sys.argv[0], "-help")
         return
 
 def print_output(solve_output):
@@ -62,7 +71,7 @@ def print_output(solve_output):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("ERROR: Not enough arguments, expected amount: 1 or 2")
+        print("ERROR: Not enough arguments, expected amount: 1 or 2, try running as:", sys.argv[0], "-help")
         sys.exit()
 
     program = Program(sys.argv)

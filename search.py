@@ -142,18 +142,18 @@ class Node:
 
 def search(problem):
     timer_start = timer()
-    node_total = 1
+    node_total = 1 # counts nodes in the created tree
     revisited = 0
-    explored_states = []
-    counter = 0
+    explored_states = [] # visited states
+    counter = 0 # additional value put in tuple in case of equal f and h functions
 
-    fringe = []
+    fringe = [] # open set
+    # starting point
     initial = Node(0, problem.initial_state, None, None)
     heappush(fringe, (initial.calculate_cost(problem), problem.heuristic_cost_estimate(initial.state), counter, initial))
     counter += 1
     while len(fringe):
-        f, h, c, n = heappop(fringe)
-        #print("f =", f, "\tg =", n.cost, "\th =", h, "\tbox:", n.state.box_pos, "\tworker:", n.state.worker_pos)
+        n = heappop(fringe)[3]
         if problem.test_completion(n.state):
             return get_solution(n, node_total, revisited, len(fringe), len(explored_states), timer() - timer_start)
         if not problem.test_deadlock(n.state):
