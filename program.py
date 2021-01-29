@@ -47,6 +47,7 @@ def print_output(solve_output):
     print("Number of items remaining in the open set:", solve_output[3])
     print("Number of explored states:", solve_output[4])
     print("Total time [seconds]:", solve_output[5])
+    print()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
