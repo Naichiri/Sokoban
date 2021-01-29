@@ -61,10 +61,9 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
     new_pos_x, new_pos_y = current_pos_x, current_pos_y
     
     if clear_start_area:
-        temp_val = game_map[current_pos_y, current_pos_x]
-        game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
-                 max(current_pos_x - 1, 0): min(current_pos_x + 2, width)] = utils.FLOOR_VAL
-        game_map[current_pos_y, current_pos_x] = temp_val
+        g = game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
+                     max(current_pos_x - 1, 0): min(current_pos_x + 2, width)]
+        g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
     
     bad_direction_prob = 1.0 - good_direction_prob
     x_diff = finish_pos_x - current_pos_x
@@ -94,11 +93,9 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
             (is_worker_path or check_if_path_exists(width, height, new_pos, finish_pos)):
                 
             if change_direction:
-                temp_val = game_map[current_pos_y, current_pos_x]
                 g = game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
                              max(current_pos_x - 1, 0): min(current_pos_x + 2, width)]
                 g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
-                game_map[current_pos_y, current_pos_x] = temp_val
                 
             current_pos_y = int(new_pos_y)
             current_pos_x = int(new_pos_x)
@@ -166,12 +163,18 @@ def visualize_field(field):
     plt.show()
     
 if __name__ == "__main__":
-    for i in range(10):
+    for i in range(1000):
         width = 0
         height = 0
         while width * height < 3 or (width == 2 and height == 2):
             width = np.random.randint(1, 101)
             height = np.random.randint(1, 101)
-            
         m = generate_map(width, height, good_direction_prob=0.8, floor_noise_prob=0.7)
+        try:
+            assert((m == utils.BOX_VAL).sum() == 1)
+            assert((m == utils.WORKER_VAL).sum() == 1)
+            assert((m == utils.DESTINATION_VAL).sum() == 1)
+        except AssertionError:
+            visualize_field(m)
+            raise
     visualize_field(m)

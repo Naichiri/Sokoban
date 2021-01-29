@@ -1,15 +1,13 @@
 import sokoban
 import sys
 import map_generation
+import search
+import utils
 
 class Program:
-    def __init__(self, *argv):
-        self.mode = argv[1]
+    def __init__(self, argv):
+        self.mode = int(argv[1])
         self.argv = argv[2:]
-    
-    def run(self):
-        if mode == 1:
-            if len(argv) < 3:
 
     def run(self):
         length = len(self.argv)
@@ -18,20 +16,29 @@ class Program:
                 "ERROR: Mode requires standard input"
             else:
                 pass
-        if self.mode == 2:
-            
+        elif self.mode == 2:
+            d = {}
             if length > 0:
-                n_maps = argv[0]
+                n_maps = int(self.argv[0])
+            else:
+                n_maps = 1
             if length > 2:
-                width = argv[1]
-                height = argv[2]
+                width = self.argv[1]
+                height = self.argv[2]
+            else:
+                width = 10
+                height = 10
             if length > 3: 
-                good_direction_prob = argv[3]
+                d['good_direction_prob'] = self.argv[3]
             if length > 4:
-                floor_noise_prob = argv[4]
+                d['floor_noise_prob'] = self.argv[4]
                 
             for i in range(n_maps):
-                pass
+                field = map_generation.generate_map(width, height, **d)
+                map_problem = search.Problem(field)
+                output = search.search(map_problem)
+                print_output(output)
+                print(n_maps)
         return
 
 def print_output(solve_output):
@@ -55,4 +62,5 @@ if __name__ == "__main__":
         sys.exit()
 
     program = Program(sys.argv)
+    program.run()
 
