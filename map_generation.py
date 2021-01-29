@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import math
 import utils
 
@@ -9,6 +10,10 @@ def get_xy_positions(val, width, height):
     return start_pos_x, start_pos_y
 
 def check_if_path_exists(width, height, box_pos, end_pos):
+    
+    if box_pos == end_pos:
+        return True
+    
     # initialize useful variables
     map_size = width * height
     upper_left_pos = 0
@@ -49,25 +54,28 @@ def is_legal(width, height, start_pos, box_pos, end_pos):
              
     return check_if_path_exists(width, height, box_pos, end_pos)
 
-def find_path(game_map, width, height, current_pos, finish_pos):
+def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=False,
+              clear_start_area=False, good_direction_prob=0.8):
     current_pos_x, current_pos_y = get_xy_positions(current_pos, width, height)
     finish_pos_x, finish_pos_y = get_xy_positions(finish_pos, width, height)    
     new_pos_x, new_pos_y = current_pos_x, current_pos_y
     
+    if clear_start_area:
+        temp_val = game_map[current_pos_y, current_pos_x]
+        game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
+                 max(current_pos_x - 1, 0): min(current_pos_x + 2, width)] = utils.FLOOR_VAL
+        game_map[current_pos_y, current_pos_x] = temp_val
+    
+    bad_direction_prob = 1.0 - good_direction_prob
     x_diff = finish_pos_x - current_pos_x
     y_diff = finish_pos_y - current_pos_y
     move_vertical = np.random.choice([True, False])
-    while (x_diff > 0 and y_diff > 0) or\
-          not check_if_path_exists(width, height, current_pos, finish_pos):
-        
-        if not game_map[current_pos_y, current_pos_x]:
-            game_map[current_pos_y, current_pos_x] = -1
-              
-        change_direction = np.random.choice([True, False], p=[0.2, 0.8])
+
+    while (x_diff != 0 or y_diff != 0):
+        change_direction = np.random.choice([True, False], p=[0.1, 0.9])
         if change_direction:
             move_vertical = not move_vertical
-        
-        move_to_destination = np.random.choice([True, False], p=[0.7, 0.3])
+        move_to_destination = np.random.choice([True, False], p=[good_direction_prob, bad_direction_prob])
         if move_vertical:
             if move_to_destination and y_diff:
                 new_pos_y += math.copysign(1, y_diff)
@@ -75,11 +83,36 @@ def find_path(game_map, width, height, current_pos, finish_pos):
                 new_pos_y += np.random.choice([-1, 1])
         else:
             if move_to_destination and x_diff:
-                new_pos_x += math.copysign(1, y_diff)
+                new_pos_x += math.copysign(1, x_diff)
             else:
                 new_pos_x += np.random.choice([-1, 1])
+        
+        new_pos = width * new_pos_y + new_pos_x
 
-def generate_map(width, height):
+        if new_pos_x < width and new_pos_x >= 0 and\
+            new_pos_y < height and new_pos_y >= 0 and\
+            (is_worker_path or check_if_path_exists(width, height, new_pos, finish_pos)):
+                
+            if change_direction:
+                temp_val = game_map[current_pos_y, current_pos_x]
+                g = game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
+                             max(current_pos_x - 1, 0): min(current_pos_x + 2, width)]
+                g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
+                game_map[current_pos_y, current_pos_x] = temp_val
+                
+            current_pos_y = int(new_pos_y)
+            current_pos_x = int(new_pos_x)
+            x_diff = finish_pos_x - current_pos_x
+            y_diff = finish_pos_y - current_pos_y
+            if game_map[current_pos_y, current_pos_x] == utils.WALL_VAL:
+                game_map[current_pos_y, current_pos_x] = utils.FLOOR_VAL
+                
+        else:
+            new_pos_x = current_pos_x
+            new_pos_y = current_pos_y
+    return game_map     
+
+def generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7):
     if np.round(width) != width or np.round(height) != height:
         raise ValueError("height and width must be integers")
     if width > 100 or height > 100 or width < 1 or height < 1:
@@ -91,7 +124,7 @@ def generate_map(width, height):
     if width == 2 and height == 2:
         raise ValueError("map with height=2 and width=2 cannot be solved")
         
-    game_map = np.full((height, width), utils.FLOOR_VAL, dtype=np.uint8)
+    game_map = np.full((height, width), utils.WALL_VAL, dtype=np.uint8)
     
     start_pos = np.random.randint(0, map_size)
     box_pos = np.random.randint(0, map_size)
@@ -108,19 +141,37 @@ def generate_map(width, height):
     game_map[start_pos_y, start_pos_x] = utils.WORKER_VAL
     game_map[box_pos_y, box_pos_x] = utils.BOX_VAL
     game_map[end_pos_y, end_pos_x] = utils.DESTINATION_VAL
-
+    
+    game_map = find_path(game_map, width, height, start_pos, box_pos,
+                         is_worker_path=True, good_direction_prob=good_direction_prob)
+    game_map = find_path(game_map, width, height, box_pos, end_pos,
+                         clear_start_area=True, good_direction_prob=good_direction_prob)
+    
+    mask = game_map == utils.WALL_VAL
+    random_mask = np.random.choice([True, False], size=mask.size, replace=True, p=[floor_noise_prob, 1.0 - floor_noise_prob])
+    random_mask = random_mask.reshape(mask.shape)
+    mask = mask * random_mask
+    game_map[mask] = utils.FLOOR_VAL
+    
     return game_map
+
+def visualize_field(field):
+    values = [utils.FLOOR_VAL, utils.WALL_VAL, utils.WORKER_VAL, utils.BOX_VAL, utils.DESTINATION_VAL]
+    labels = ['floor', 'wall', 'worker_start_pos', 'box_start_pos', 'destination']
+    im = plt.imshow(field, interpolation='none')
+    colors = [ im.cmap(im.norm(value)) for value in values]
+    patches = [ mpatches.Patch(color=colors[i], label=labels[i] ) for i in range(len(values)) ]
+    # put those patched as legend-handles into the legend
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.show()
     
 if __name__ == "__main__":
-    for i in range(10000):
+    for i in range(10):
         width = 0
         height = 0
         while width * height < 3 or (width == 2 and height == 2):
             width = np.random.randint(1, 101)
             height = np.random.randint(1, 101)
             
-        m = generate_map(width, height)
-        assert((m == 0).sum() == width * height - 3)
-        
-    plt.imshow(m)
-    plt.show()
+        m = generate_map(width, height, good_direction_prob=0.8, floor_noise_prob=0.7)
+    visualize_field(m)
