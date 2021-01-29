@@ -1,4 +1,5 @@
 import sokoban
+import numpy as np
 import sys
 import map_generation
 import search
@@ -13,9 +14,11 @@ class Program:
         length = len(self.argv)
         if self.mode == 1:
             if length == 0:
-                "ERROR: Mode requires standard input"
+                print("ERROR: Mode requires standard input")
             else:
-                pass
+                data = np.load(self.argv[0])
+                for key in data:
+                    print_output(sokoban.solve(data[key]))
         elif self.mode == 2:
             d = {}
             if length > 0:
@@ -63,4 +66,3 @@ if __name__ == "__main__":
 
     program = Program(sys.argv)
     program.run()
-
