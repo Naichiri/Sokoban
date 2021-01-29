@@ -38,11 +38,8 @@ class Program:
                 
             for i in range(n_maps):
                 field = map_generation.generate_map(width, height, **d)
-                map_problem = search.Problem(field)
-                output = search.search(map_problem)
-                print_output(output)
                 map_generation.visualize_field(field)
-                print('Press enter to continue...', end='')
+                print_output(sokoban.solve(field))
         elif self.mode == "-help":
             print("Available execution parameters:\n", \
                     "-help - displays this text\n", \

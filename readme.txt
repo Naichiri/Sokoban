@@ -2,7 +2,7 @@ README
 
 Autorzy:
 	Christian Konopczyński
-    Wojciech Maciejewski
+    	Wojciech Maciejewski
 
 Treść projektu:
 	Zbliża się koniec zmiany w hurtowni. Wszyscy pracownicy poszli już do domu, a ostatni z nich zorientował się,
@@ -63,3 +63,7 @@ Pliki źródłowe i najważniejsze elementy:
         solve(field) - funkcja tworząca obiekt klasy Problem dla danej planszy, 
     utils.py:
         zawiera wykorzystywane stałe oraz funkcje wspierające analizę danych
+    map_generation.py:
+	generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7) - funkcja generująca mapy o zadanych właściwościach
+	visualize_field(field) - funkcja rysująca na ekran zadaną mapę
+	
