@@ -41,7 +41,8 @@ class Program:
                 map_problem = search.Problem(field)
                 output = search.search(map_problem)
                 print_output(output)
-                print(n_maps)
+                map_generation.visualize_field(field)
+                print('Press enter to continue...', end='')
         return
 
 def print_output(solve_output):
