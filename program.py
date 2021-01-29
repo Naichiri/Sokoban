@@ -42,7 +42,6 @@ class Program:
                 output = search.search(map_problem)
                 print_output(output)
                 map_generation.visualize_field(field)
-                print('Press enter to continue...', end='')
         return
 
 def print_output(solve_output):

@@ -5,12 +5,17 @@ import math
 import utils
 
 def get_xy_positions(val, width, height):
+    '''
+    Translate 1d postionon from flattened map to 2 coordinates of 2d map
+    '''
     start_pos_y = val // width
     start_pos_x = val - start_pos_y * width
     return start_pos_x, start_pos_y
 
 def check_if_path_exists(width, height, box_pos, end_pos):
-    
+    '''
+    Check if path exists assuming there are no walls on the map
+    '''
     if box_pos == end_pos:
         return True
     
@@ -40,6 +45,10 @@ def check_if_path_exists(width, height, box_pos, end_pos):
     return True
 
 def is_legal(width, height, start_pos, box_pos, end_pos):
+    '''
+    Check if map with given start_pos, box_pos and end_pos can be legal if there were no 
+    additional walls in it
+    '''
     
     # check if positions overlap
     if start_pos == box_pos or start_pos == end_pos or box_pos == end_pos:
@@ -56,10 +65,15 @@ def is_legal(width, height, start_pos, box_pos, end_pos):
 
 def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=False,
               clear_start_area=False, good_direction_prob=0.8):
+    '''
+    Make a path from current_pos to finish_pos and update game_map with it.
+    '''
     current_pos_x, current_pos_y = get_xy_positions(current_pos, width, height)
     finish_pos_x, finish_pos_y = get_xy_positions(finish_pos, width, height)    
     new_pos_x, new_pos_y = current_pos_x, current_pos_y
     
+    # from the perspective of the box there has to be some additional space for
+    # the worker to walk around it.
     if clear_start_area:
         g = game_map[max(current_pos_y - 1, 0): min(current_pos_y + 2, height),
                      max(current_pos_x - 1, 0): min(current_pos_x + 2, width)]
@@ -74,6 +88,11 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
         change_direction = np.random.choice([True, False], p=[0.1, 0.9])
         if change_direction:
             move_vertical = not move_vertical
+            
+        # If move_to destination is True - the worker goes towards destination.
+        # If move_to_destination is False - the workek goes in random direction.
+        # It means that the path is biased towards the destination, in the worst case
+        # scenario when the if good_direction_prob=0 it will work like random search
         move_to_destination = np.random.choice([True, False], p=[good_direction_prob, bad_direction_prob])
         if move_vertical:
             if move_to_destination and y_diff:
@@ -88,6 +107,7 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
         
         new_pos = width * new_pos_y + new_pos_x
 
+        # if the new position is legal - update for next iteration
         if new_pos_x < width and new_pos_x >= 0 and\
             new_pos_y < height and new_pos_y >= 0 and\
             (is_worker_path or check_if_path_exists(width, height, new_pos, finish_pos)):
@@ -110,6 +130,10 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
     return game_map     
 
 def generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7):
+    '''
+    Generate random map for our algorithm.
+    '''
+    
     if np.round(width) != width or np.round(height) != height:
         raise ValueError("height and width must be integers")
     if width > 100 or height > 100 or width < 1 or height < 1:
@@ -153,6 +177,9 @@ def generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7):
     return game_map
 
 def visualize_field(field):
+    '''
+    Visualize the map.
+    '''
     values = [utils.FLOOR_VAL, utils.WALL_VAL, utils.WORKER_VAL, utils.BOX_VAL, utils.DESTINATION_VAL]
     labels = ['floor', 'wall', 'worker_start_pos', 'box_start_pos', 'destination']
     im = plt.imshow(field, interpolation='none')
