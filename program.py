@@ -2,13 +2,13 @@ import sokoban
 import sys
 
 class Program:
-    def __init__(self, mode, stdin):
+    def __init__(self, mode, input_file = None):
         self.mode = mode
-        self.stdin = stdin
+        self.input_file = input_file
     
     def run(self):
         if mode == 1:
-            if stdin == None:
+            if input_file == None:
                 "ERROR: Mode requires standard input"
             else:
                 pass
@@ -33,5 +33,8 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("ERROR: Not enough arguments, expected amount: 1 or 2")
         sys.exit()
-    program = Program(sys.argv[1], sys.argv[2])
+    if len(sys.argv == 3):
+        program = Program(int(sys.argv[1]), sys.argv[2])
+    else:
+        program = Program(int(sys.argv[1]))
     program.run()
