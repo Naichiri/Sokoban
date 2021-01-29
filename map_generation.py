@@ -56,7 +56,8 @@ def is_legal(width, height, start_pos, box_pos, end_pos):
 
 def find_path(game_map, width, height, current_pos, finish_pos):
     current_pos_x, current_pos_y = get_xy_positions(current_pos, width, height)
-    finish_pos_x, finish_pos_y = get_xy_positions(finish_pos, width, height)
+    finish_pos_x, finish_pos_y = get_xy_positions(finish_pos, width, height)    
+    new_pos_x, new_pos_y = current_pos_x, current_pos_y
     
     x_diff = finish_pos_x - current_pos_x
     y_diff = finish_pos_y - current_pos_y
@@ -74,14 +75,14 @@ def find_path(game_map, width, height, current_pos, finish_pos):
         move_to_destination = np.random.choice([True, False], p=[0.7, 0.3])
         if move_vertical:
             if move_to_destination and y_diff:
-                current_pos_y += math.copysign(1, y_diff)
+                new_pos_y += math.copysign(1, y_diff)
             else:
-                current_pos_y += np.random.choice([-1, 1])
+                new_pos_y += np.random.choice([-1, 1])
         else:
             if move_to_destination and x_diff:
-                current_pos_x += math.copysign(1, y_diff)
+                new_pos_x += math.copysign(1, y_diff)
             else:
-                current_pos_x += np.random.choice([-1, 1])
+                new_pos_x += np.random.choice([-1, 1])
 
 def generate_map(width, height):
     if np.round(width) != width or np.round(height) != height:
@@ -115,16 +116,16 @@ def generate_map(width, height):
 
     return game_map
     
-
-for i in range(10000):
-    width = 0
-    height = 0
-    while width * height < 3 or (width == 2 and height == 2):
-        width = np.random.randint(1, 101)
-        height = np.random.randint(1, 101)
+if __name__ == "__main__":
+    for i in range(10000):
+        width = 0
+        height = 0
+        while width * height < 3 or (width == 2 and height == 2):
+            width = np.random.randint(1, 101)
+            height = np.random.randint(1, 101)
+            
+        m = generate_map(width, height)
+        assert((m == 0).sum() == width * height - 3)
         
-    m = generate_map(width, height)
-    assert((m == 0).sum() == width * height - 3)
-    
-plt.imshow(m)
-plt.show()
+    plt.imshow(m)
+    plt.show()
