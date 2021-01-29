@@ -33,7 +33,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("ERROR: Not enough arguments, expected amount: 1 or 2")
         sys.exit()
-    if len(sys.argv == 3):
+    if len(sys.argv) == 3:
         program = Program(int(sys.argv[1]), sys.argv[2])
     else:
         program = Program(int(sys.argv[1]))
