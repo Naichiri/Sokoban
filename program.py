@@ -1,23 +1,22 @@
 import sokoban
+import numpy as np
 import sys
 import map_generation
 
 class Program:
-    def __init__(self, *argv):
-        self.mode = argv[1]
+    def __init__(self, argv):
+        self.mode = int(argv[1])
         self.argv = argv[2:]
-    
-    def run(self):
-        if mode == 1:
-            if len(argv) < 3:
 
     def run(self):
         length = len(self.argv)
         if self.mode == 1:
             if length == 0:
-                "ERROR: Mode requires standard input"
+                print("ERROR: Mode requires standard input")
             else:
-                pass
+                data = np.load(self.argv[0])
+                for key in data:
+                    print_output(sokoban.solve(data[key]))
         if self.mode == 2:
             
             if length > 0:
@@ -55,4 +54,4 @@ if __name__ == "__main__":
         sys.exit()
 
     program = Program(sys.argv)
-
+    program.run()
