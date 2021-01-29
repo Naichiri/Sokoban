@@ -5,24 +5,30 @@ import map_generation
 class Program:
     def __init__(self, *argv):
         self.mode = argv[1]
+        self.argv = argv[2:]
     
     def run(self):
         if mode == 1:
             if len(argv) < 3:
+
+    def run(self):
+        length = len(self.argv)
+        if self.mode == 1:
+            if length == 0:
                 "ERROR: Mode requires standard input"
             else:
                 pass
-        if mode == 2:
-            length = len(argv)
+        if self.mode == 2:
+            
+            if length > 0:
+                n_maps = argv[0]
             if length > 2:
-                n_maps = argv[1]
+                width = argv[1]
+                height = argv[2]
+            if length > 3: 
+                good_direction_prob = argv[3]
             if length > 4:
-                width = argv[2]
-                height = argv[3]
-            if length > 5: 
-                good_direction_prob = argv[4]
-            if length > 6:
-                floor_noise_prob = argv[5]
+                floor_noise_prob = argv[4]
                 
             for i in range(n_maps):
                 pass
@@ -47,5 +53,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("ERROR: Not enough arguments, expected amount: 1 or 2")
         sys.exit()
+
     program = Program(sys.argv)
-    program.run()
+
