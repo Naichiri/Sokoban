@@ -48,7 +48,8 @@ Metoda rozwiązania:
 
 Pliki źródłowe i najważniejsze elementy:
     map_generation.py:
-        #TODO
+	    generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7) - funkcja generująca mapy o zadanych właściwościach
+	    visualize_field(field) - funkcja rysująca na ekran zadaną mapę
     program.py:
         Program - klasa zawierająca metody dotyczące sposobów uruchomienia programu
         print_output(solve_output) - funkcja wypisująca wynik wykonania algorytmu w przejrzystej postaci
@@ -63,7 +64,3 @@ Pliki źródłowe i najważniejsze elementy:
         solve(field) - funkcja tworząca obiekt klasy Problem dla danej planszy, 
     utils.py:
         zawiera wykorzystywane stałe oraz funkcje wspierające analizę danych
-    map_generation.py:
-	generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7) - funkcja generująca mapy o zadanych właściwościach
-	visualize_field(field) - funkcja rysująca na ekran zadaną mapę
-	
