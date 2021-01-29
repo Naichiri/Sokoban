@@ -1,12 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-
-FLOOR_VAL = 0
-WAAL_VAL = 1
-BOX_VAL = 2
-WORKER_VAL = 3
-DESTINATION_VAL = 4
+import utils
 
 def get_xy_positions(val, width, height):
     start_pos_y = val // width
@@ -96,7 +91,7 @@ def generate_map(width, height):
     if width == 2 and height == 2:
         raise ValueError("map with height=2 and width=2 cannot be solved")
         
-    game_map = np.full((height, width), FLOOR_VAL, dtype=np.uint8)
+    game_map = np.full((height, width), utils.FLOOR_VAL, dtype=np.uint8)
     
     start_pos = np.random.randint(0, map_size)
     box_pos = np.random.randint(0, map_size)
@@ -110,9 +105,9 @@ def generate_map(width, height):
     box_pos_x, box_pos_y = get_xy_positions(box_pos, width, height)
     end_pos_x, end_pos_y = get_xy_positions(end_pos, width, height)
     
-    game_map[start_pos_y, start_pos_x] = WORKER_VAL
-    game_map[box_pos_y, box_pos_x] = BOX_VAL
-    game_map[end_pos_y, end_pos_x] = DESTINATION_VAL
+    game_map[start_pos_y, start_pos_x] = utils.WORKER_VAL
+    game_map[box_pos_y, box_pos_x] = utils.BOX_VAL
+    game_map[end_pos_y, end_pos_x] = utils.DESTINATION_VAL
 
     return game_map
     
