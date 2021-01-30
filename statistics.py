@@ -4,7 +4,7 @@ import map_generation
 import matplotlib.pyplot as plt
 import json
 
-def get_maps_for_statistics(output_file, n_maps=10000):
+def get_maps_for_statistics(output_file, n_maps=1000):
     d = {}
     for i in range(n_maps):
         width = 0
@@ -12,8 +12,8 @@ def get_maps_for_statistics(output_file, n_maps=10000):
         good_direction_prob = np.random.random()
         floor_noise_prob = np.random.random()
         while width * height < 3 or (width == 2 and height == 2):
-            width = np.random.randint(1, 11)
-            height = np.random.randint(1, 11)
+            width = np.random.randint(1, 21)
+            height = np.random.randint(1, 21)
         m = map_generation.generate_map(width, height,
                                         good_direction_prob=good_direction_prob,
                                         floor_noise_prob=0)
@@ -24,7 +24,7 @@ def get_maps_for_statistics(output_file, n_maps=10000):
 
 if __name__ == '__main__':
     path = 'maps_for_statistics_small.npz'
-    get_maps_for_statistics(path)
+    #get_maps_for_statistics(path)
     
     data = np.load(path)
     sizes = []
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     times = []
     outputs = []
     for key in data:
-        print(key)
+        #print(key)
         field = data[key]
         output = sokoban.solve(field)
         sizes.append(field.size)
@@ -47,12 +47,14 @@ if __name__ == '__main__':
 
         outputs.append(list(output))
     print(np.sum(times))
+    
+    
     '''
     for output in outputs:
         output[0] = [str(action) for action in output[0]]
     with open('test.json', 'w') as f:
         f.write(json.dumps(outputs))
-    
+    '''
     with open('test.json', 'r') as f:
         old_outputs = json.load(f)
     
@@ -63,7 +65,5 @@ if __name__ == '__main__':
     old_outputs = [output[0] for output in old_outputs]
     
     assert(old_outputs == new_outputs)
-    '''
     
     plt.scatter(gen_nodes_numbers, times)
-    

@@ -162,7 +162,7 @@ def search(problem):
             for action in possible_actions:
                 child = n.get_child(action)
                 node_total += 1
-                if (child.state.box_pos, child.state.worker_pos) not in explored_states and not any(child in item for item in fringe): 
+                if (child.state.box_pos, child.state.worker_pos) not in explored_states and not any(child == item[-1] for item in fringe): 
                     heappush(fringe, (child.calculate_cost(problem), problem.heuristic_cost_estimate(child.state), counter, child))
                     problem.heuristic_cost_estimate(child.state)
                     counter += 1

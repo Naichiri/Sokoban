@@ -72,6 +72,21 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
     finish_pos_x, finish_pos_y = get_xy_positions(finish_pos, width, height)    
     new_pos_x, new_pos_y = current_pos_x, current_pos_y
     
+    if not is_worker_path and\
+        (new_pos_x == 0 or new_pos_x == width - 1 or\
+        new_pos_y == 0 or new_pos_y == height - 1):
+
+        g = game_map[max(new_pos_y - 1, 0): min(new_pos_y + 2, height),
+                     max(new_pos_x - 1, 0): min(new_pos_x + 2, width)]
+        g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL    
+        
+        x_positions = sorted([new_pos_x, finish_pos_x])
+        y_positions = sorted([new_pos_y, finish_pos_y])
+        g = game_map[y_positions[0]: y_positions[1] + 1,
+                     x_positions[0]: x_positions[1] + 1]
+        g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
+        return game_map  
+    
     # from the perspective of the box there has to be some additional space for
     # the worker to walk around it.
     if clear_start_area:
@@ -85,6 +100,7 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
     move_vertical = np.random.choice([True, False])
 
     while (x_diff != 0 or y_diff != 0):
+        old_dir = move_vertical
         change_direction = np.random.choice([True, False], p=[0.1, 0.9])
         if change_direction:
             move_vertical = not move_vertical
@@ -94,14 +110,15 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
         # It means that the path is biased towards the destination, in the worst case
         # scenario when the if good_direction_prob=0 it will work like random search
         move_to_destination = np.random.choice([True, False], p=[good_direction_prob, bad_direction_prob])
+        
         if move_vertical:
             if move_to_destination and y_diff:
-                new_pos_y += math.copysign(1, y_diff)
+                new_pos_y += int(math.copysign(1, y_diff))
             else:
                 new_pos_y += np.random.choice([-1, 1])
         else:
             if move_to_destination and x_diff:
-                new_pos_x += math.copysign(1, x_diff)
+                new_pos_x += int(math.copysign(1, x_diff))
             else:
                 new_pos_x += np.random.choice([-1, 1])
         
@@ -117,16 +134,36 @@ def find_path(game_map, width, height, current_pos, finish_pos, is_worker_path=F
                              max(current_pos_x - 1, 0): min(current_pos_x + 2, width)]
                 g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
                 
-            current_pos_y = int(new_pos_y)
-            current_pos_x = int(new_pos_x)
+                
+            if not is_worker_path and\
+                (new_pos_x == 0 or new_pos_x == width - 1 or\
+                new_pos_y == 0 or new_pos_y == height - 1):
+
+                g = game_map[max(new_pos_y - 1, 0): min(new_pos_y + 2, height),
+                             max(new_pos_x - 1, 0): min(new_pos_x + 2, width)]
+                g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL    
+                
+                x_positions = sorted([new_pos_x, finish_pos_x])
+                y_positions = sorted([new_pos_y, finish_pos_y])
+                g = game_map[y_positions[0]: y_positions[1] + 1,
+                             x_positions[0]: x_positions[1] + 1]
+                g[:, :][g == utils.WALL_VAL] = utils.FLOOR_VAL
+                current_pos_y = finish_pos_y
+                current_pos_x = finish_pos_x
+            else:
+                current_pos_y = int(new_pos_y)
+                current_pos_x = int(new_pos_x)
+                if game_map[current_pos_y, current_pos_x] == utils.WALL_VAL:
+                    game_map[current_pos_y, current_pos_x] = utils.FLOOR_VAL
+                    
             x_diff = finish_pos_x - current_pos_x
             y_diff = finish_pos_y - current_pos_y
-            if game_map[current_pos_y, current_pos_x] == utils.WALL_VAL:
-                game_map[current_pos_y, current_pos_x] = utils.FLOOR_VAL
                 
         else:
             new_pos_x = current_pos_x
             new_pos_y = current_pos_y
+            move_vertical = old_dir
+            
     return game_map     
 
 def generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7):
