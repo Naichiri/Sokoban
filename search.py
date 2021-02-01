@@ -1,9 +1,6 @@
 import utils
-
-import numpy as np
 from enum import Enum
 from heapq import heappush, heappop
-from scipy.spatial import distance
 from timeit import default_timer as timer
 
 class Action(Enum):
@@ -18,10 +15,11 @@ class State:
         self.worker_pos = worker_pos
 
 class Problem:
+
     def __init__(self, field):
         self.field_shape = field.shape
         self.initial_state = State(utils.get_box_pos(field), utils.get_worker_pos(field))
-        self.walls = utils.get_walls(field)
+        self.walls = set(utils.get_walls(field))
         self.destination = utils.get_destination(field)
 
     def test_completion(self, state):
@@ -71,39 +69,43 @@ class Problem:
         # check for up movement
         new_worker_pos = (worker_pos_x - 1, worker_pos_y)
         new_box_pos = (worker_pos_x - 2, worker_pos_y)
-        if new_worker_pos[0] >= 0 and new_worker_pos not in self.walls:
-            if new_worker_pos == state.box_pos and (new_box_pos in self.walls or not all(coord >= 0 for coord in new_box_pos)):
-                None
-            else:
-                actions.append(Action.up)
+        if new_worker_pos[0] >= 0 and\
+            new_worker_pos not in self.walls and\
+            (new_worker_pos != state.box_pos or\
+             (not any(coord < 0 for coord in new_box_pos) and new_box_pos not in self.walls)):
+            actions.append(Action.up)
+                
         # check for down movement
         new_worker_pos = (worker_pos_x + 1, worker_pos_y)
         new_box_pos = (worker_pos_x + 2, worker_pos_y)
-        if new_worker_pos[0] < self.field_shape[0] and new_worker_pos not in self.walls:
-            if new_worker_pos == state.box_pos and (new_box_pos in self.walls or not all(coord >= 0 for coord in new_box_pos)):
-                None
-            else:
-                actions.append(Action.down)
+        if new_worker_pos[0] < self.field_shape[0] and\
+            new_worker_pos not in self.walls and\
+            (new_worker_pos != state.box_pos or\
+             (not any(coord < 0 for coord in new_box_pos) and new_box_pos not in self.walls)):
+            actions.append(Action.down)
+            
         # check for left movement
         new_worker_pos = (worker_pos_x, worker_pos_y - 1)
         new_box_pos = (worker_pos_x, worker_pos_y - 2)
-        if new_worker_pos[1] >= 0 and new_worker_pos not in self.walls:
-            if new_worker_pos == state.box_pos and (new_box_pos in self.walls or not all(coord >= 0 for coord in new_box_pos)):
-                None
-            else:
-                actions.append(Action.left)
+        if new_worker_pos[1] >= 0 and\
+            new_worker_pos not in self.walls and\
+            (new_worker_pos != state.box_pos or\
+             (not any(coord < 0 for coord in new_box_pos) and new_box_pos not in self.walls)):
+            actions.append(Action.left)
+            
         # check for right movement
         new_worker_pos = (worker_pos_x, worker_pos_y + 1)
-        new_box_pos = (worker_pos_x, worker_pos_y + 2)
-        if new_worker_pos[1] < self.field_shape[1] and new_worker_pos not in self.walls:
-            if new_worker_pos == state.box_pos and (new_box_pos in self.walls or not all(coord >= 0 for coord in new_box_pos)):
-                None
-            else:
-                actions.append(Action.right)
+        new_box_pos = (worker_pos_x, worker_pos_y + 2)                
+        if new_worker_pos[1] < self.field_shape[1] and\
+            new_worker_pos not in self.walls and\
+            (new_worker_pos != state.box_pos or\
+             (not any(coord < 0 for coord in new_box_pos) and new_box_pos not in self.walls)):
+            actions.append(Action.right)
         return actions
-
+    
     def heuristic_cost_estimate(self, state):
-        return distance.cityblock(state.worker_pos, state.box_pos) + distance.cityblock(state.box_pos, self.destination) - 1
+        return abs(state.worker_pos[0] - state.box_pos[0]) + abs(state.worker_pos[1] - state.box_pos[1]) +\
+            abs(state.box_pos[0] - self.destination[0]) + abs(state.box_pos[1] - self.destination[1]) - 1
 
 class Node:
     def __init__(self, cost, state, parent, move):
@@ -123,19 +125,19 @@ class Node:
 
         if action == Action.up:
             new_worker_pos = (worker_pos_x - 1, worker_pos_y)
-            if self.state.box_pos == new_worker_pos:
+            if new_box_pos == new_worker_pos:
                 new_box_pos = (worker_pos_x - 2, worker_pos_y)
-        if action == Action.down:
+        elif action == Action.down:
             new_worker_pos = (worker_pos_x + 1, worker_pos_y)
-            if self.state.box_pos == new_worker_pos:
+            if new_box_pos == new_worker_pos:
                 new_box_pos = (worker_pos_x + 2, worker_pos_y)
-        if action == Action.left:
+        elif action == Action.left:
             new_worker_pos = (worker_pos_x, worker_pos_y - 1)
-            if self.state.box_pos == new_worker_pos:
+            if new_box_pos == new_worker_pos:
                 new_box_pos = (worker_pos_x, worker_pos_y - 2)
-        if action == Action.right:
+        elif action == Action.right:
             new_worker_pos = (worker_pos_x, worker_pos_y + 1)
-            if self.state.box_pos == new_worker_pos:
+            if new_box_pos == new_worker_pos:
                 new_box_pos = (worker_pos_x, worker_pos_y + 2)
 
         return Node(self.cost + 1, State(new_box_pos, new_worker_pos), self, action)
@@ -144,35 +146,33 @@ def search(problem):
     timer_start = timer()
     node_total = 1 # counts nodes in the created tree
     revisited = 0
-    explored_states = [] # visited states
     counter = 0 # additional value put in tuple in case of equal f and h functions
 
     fringe = [] # open set
     # starting point
     initial = Node(0, problem.initial_state, None, None)
+    explored_states = {initial} # visited states
+    node_explored = 1
     heappush(fringe, (initial.calculate_cost(problem), problem.heuristic_cost_estimate(initial.state), counter, initial))
     counter += 1
     while len(fringe):
         n = heappop(fringe)[3]
         if problem.test_completion(n.state):
-            return get_solution(n, node_total, revisited, len(fringe), len(explored_states), timer() - timer_start)
+            return get_solution(n, node_total, revisited, len(fringe), node_explored, timer() - timer_start)
         if not problem.test_deadlock(n.state):
-            explored_states.append( (n.state.box_pos, n.state.worker_pos) )
+            explored_states.add((n.state.box_pos, n.state.worker_pos))
+            node_explored += 1
             possible_actions = problem.get_possible_actions(n.state)
             for action in possible_actions:
                 child = n.get_child(action)
                 node_total += 1
-                if (child.state.box_pos, child.state.worker_pos) not in explored_states and not any(child == item[-1] for item in fringe): 
+                if (child.state.box_pos, child.state.worker_pos) not in explored_states: 
                     heappush(fringe, (child.calculate_cost(problem), problem.heuristic_cost_estimate(child.state), counter, child))
-                    problem.heuristic_cost_estimate(child.state)
                     counter += 1
                 else:
                     revisited += 1
-                    for item in fringe:
-                        if item[3] == child and item[3].cost > child.cost:
-                            node = child
 
-    return (None, node_total, revisited, len(fringe), len(explored_states), timer() - timer_start)
+    return (None, node_total, revisited, len(fringe), node_explored, timer() - timer_start)
 
 def get_solution(current_node, node_total, revisited, fringe_size, explored_size, total_time):
     steps_taken = []

@@ -3,8 +3,9 @@ import sokoban
 import map_generation
 import matplotlib.pyplot as plt
 import json
+import time
 
-def get_maps_for_statistics(output_file, n_maps=1000):
+def get_maps_for_statistics(output_file, n_maps=10000):
     d = {}
     for i in range(n_maps):
         width = 0
@@ -12,20 +13,19 @@ def get_maps_for_statistics(output_file, n_maps=1000):
         good_direction_prob = np.random.random()
         floor_noise_prob = np.random.random()
         while width * height < 3 or (width == 2 and height == 2):
-            width = np.random.randint(1, 21)
-            height = np.random.randint(1, 21)
-        m = map_generation.generate_map(width, height,
-                                        good_direction_prob=good_direction_prob,
-                                        floor_noise_prob=0)
+            width = np.random.randint(1, 51)
+            height = np.random.randint(1, 51)
+        m = map_generation.generate_map(width, height, good_direction_prob=good_direction_prob, floor_noise_prob=floor_noise_prob)
         d[str(i)] = m
         
     np.savez(output_file, **d)
     return
 
 if __name__ == '__main__':
-    path = 'maps_for_statistics_small.npz'
-    #get_maps_for_statistics(path)
-    
+    path = 'maps_for_statistics.npz'
+
+    get_maps_for_statistics(path)
+
     data = np.load(path)
     sizes = []
     gen_nodes_numbers = []
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     times = []
     outputs = []
     for key in data:
-        #print(key)
+        print(key)
         field = data[key]
         output = sokoban.solve(field)
         sizes.append(field.size)
@@ -46,24 +46,21 @@ if __name__ == '__main__':
         times.append(output[5])
 
         outputs.append(list(output))
-    print(np.sum(times))
-    
-    
-    '''
-    for output in outputs:
-        output[0] = [str(action) for action in output[0]]
-    with open('test.json', 'w') as f:
-        f.write(json.dumps(outputs))
-    '''
-    with open('test.json', 'r') as f:
-        old_outputs = json.load(f)
-    
-    outputs = [output[0] for output in outputs]
-    new_outputs = []
-    for output in outputs:
-        new_outputs.append([str(action) for action in output])
-    old_outputs = [output[0] for output in old_outputs]
-    
-    assert(old_outputs == new_outputs)
+    print('time taken for all maps:', np.sum(times))
+    branchning_factors = np.array(gen_nodes_numbers) / np.array(explored_states_number)
+    print('average branching factor:', branchning_factors.mean())
+    print('max branching factor:', branchning_factors.max())
+    print('min branching factor:', branchning_factors.min())
+    idx = np.argmax(branchning_factors)
+    print(f'max for: n_nodes={gen_nodes_numbers[idx]}, n_explored={explored_states_number[idx]}' )
     
     plt.scatter(gen_nodes_numbers, times)
+    plt.scatter(sizes, times)
+    plt.scatter(sizes, gen_nodes_numbers)
+    plt.scatter(branchning_factors, times)
+    path_lenghts = [len(output) for output in outputs]
+    plt.scatter(path_lenghts, times)
+    temp = []
+    for path_len, b_factor in zip (path_lenghts, branchning_factors):
+        temp.append(np.power(b_factor, path_len))
+    plt.scatter(temp, times)
