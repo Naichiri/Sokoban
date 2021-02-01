@@ -27,7 +27,11 @@ Sposoby uruchomienia programu:
     python program.py 1 file.npz - rozwiązanie wszystkich map w pliku uprzednio tam zamieszczonych za pomocą numpy.savez("file.npz", ...)
     python program.py 2 [n] [width length] [gdp] [fnp] - rozwiązanie n map o wielkości width x length wygenerowanych przez program na podstawie
                                                 dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability
-                                                Domyślne wartości parametrów: n = 1, width = 10, length = 10, gdp = 0.5, fnp = 0.7
+                                                Domyślne wartości parametrów: n = 1, width = 10, height = 10, gdp = 0.5, fnp = 0.7
+    python program.py 3 [n] [min_size max_size] [gdp] [fnp] - rozwiązanie n map o wielkościach interplowanych liniowo między min_size x min_size, a max_size x max_size
+						wygenerowanych przez program na podstawie dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability.
+						Na wyjściu pokazuje tabelkę zgodną z wymaganiami.
+                                                Domyślne wartości parametrów: n = 1, min_size= 3, max_size = 100, gdp = 0.5, fnp = 0.7
 
 Dane wejściowe:
 	Program akceptuje pliki .npyz z danymi testowymi, utworzone za pomocą numpy.savez(file, ...).
