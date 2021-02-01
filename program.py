@@ -101,7 +101,9 @@ class Program:
                     "\tBy default solves one 10x10 map. Additional parameters tweak map generation, details in readme\n",
                     "3 [n] [min_size max_size] [gdp] [fnp] - solves for n maps with sizes interpolated lineary\n",
                     "\tbetween min_size x min_size and max_size x max_size which are generated randomly. \n",
-                    "\tBy default solves one 3x3 map. Additional parameters tweak map generation, details in readme\n")
+                    "\tBy default solves one 3x3 map. Additional parameters tweak map generation, details in readme\n\n",
+                    "Example of how to run the program:\n",
+                    "\tpython program.py 2 20 10 10 0.3 0.7")
         else:
             print("ERROR: Unknown parameter, try running as:", sys.argv[0], "-help")
         return

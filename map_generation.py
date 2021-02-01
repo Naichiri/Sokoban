@@ -181,6 +181,11 @@ def generate_map(width, height, good_direction_prob=0.5, floor_noise_prob=0.7):
     if width > 100 or height > 100 or width < 1 or height < 1:
         raise ValueError("height and width must be between 1 and 100")
         
+    if good_direction_prob > 1.0 or good_direction_prob < 0.0:
+        raise ValueError("good_direction_prob be between 0.0 and 1.0")
+    if floor_noise_prob > 1.0 or floor_noise_prob < 0.0:
+        raise ValueError("floor_noise_prob be between 0.0 and 1.0")
+        
     map_size = width * height
     if map_size < 3:
         raise ValueError("no legal map can be generated with mapsize smaller than 3")    
