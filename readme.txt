@@ -1,8 +1,8 @@
 README
 
 Autorzy:
-	Christian Konopczyński
-    	Wojciech Maciejewski
+	Christian Konopczyński, nr indeksu: 293 126
+    	Wojciech Maciejewski, nr indeksu: 293 143
 
 Treść projektu:
 	Zbliża się koniec zmiany w hurtowni. Wszyscy pracownicy poszli już do domu, a ostatni z nich zorientował się,
@@ -23,9 +23,9 @@ Treść projektu:
 Sposoby uruchomienia programu:
 	Program działa poprzez uruchomienie wynikowego pliku z dodatkowymi parametrami.
     Wszystkie możliwe opcje i ich objaśnienie:
-    program -help - wyświetlenie listy możliwych parametrów i krótkie objaśnienie.
-    program 1 file.npz - rozwiązanie wszystkich map w pliku uprzednio tam zamieszczonych za pomocą numpy.savez("file.npz", ...)
-    program 2 [n] [width length] [gdp] [fnp] - rozwiązanie n map o wielkości width x length wygenerowanych przez program na podstawie
+    python program.py -help - wyświetlenie listy możliwych parametrów i krótkie objaśnienie.
+    python program.py 1 file.npz - rozwiązanie wszystkich map w pliku uprzednio tam zamieszczonych za pomocą numpy.savez("file.npz", ...)
+    python program.py 2 [n] [width length] [gdp] [fnp] - rozwiązanie n map o wielkości width x length wygenerowanych przez program na podstawie
                                                 dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability
                                                 Domyślne wartości parametrów: n = 1, width = 10, length = 10, gdp = 0.5, fnp = 0.7
 
@@ -40,7 +40,7 @@ Dane wejściowe:
     ...               [0, 0, 2, 0],
     ...               [0, 0, 0, 0]])
     >>> b = np.array([[1, 4, 2, 3]])
-    >>> np.savez("file.npz", a=a, b=b)
+    >>> np.savez("file.npz", a=a, b=b) # Zapisuje obie mapy do pliku file.npz
 
 Metoda rozwiązania:
 	Zaimplementowane zostały dwa algorytmy: jeden służący do generowania problemu, drugi służący do jego rozwiązania.
@@ -64,3 +64,9 @@ Pliki źródłowe i najważniejsze elementy:
         solve(field) - funkcja tworząca obiekt klasy Problem dla danej planszy, 
     utils.py:
         zawiera wykorzystywane stałe oraz funkcje wspierające analizę danych
+
+Decyzje projektowe:
+	Zadana wielkość mapy do wygenerowania (2-gi tryb uruchomienia) musi mieć wielkość co najmniej 3 pola
+	i nie może być planszą kwadratową o boku 2 (żeby mogła być możliwa do przejścia),
+	dodatkowo szerokość i wysokość muszą być mniejsze lub równe 100.
+ 

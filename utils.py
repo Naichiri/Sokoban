@@ -1,3 +1,8 @@
+'''
+Author: Christian Konopczyński
+Problem: Sokoban
+'''
+
 import numpy as np
 
 FLOOR_VAL = 0
@@ -5,6 +10,8 @@ WALL_VAL = 1
 BOX_VAL = 2
 WORKER_VAL = 3
 DESTINATION_VAL = 4
+MAX_WIDTH = 100
+MAX_HEIGHT = 100
 
 def get_coordinates(field, value):
     w = np.where(field == value)

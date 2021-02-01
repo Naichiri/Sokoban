@@ -1,3 +1,8 @@
+'''
+Author: Christian Konopczyński
+Problem: Sokoban
+'''
+
 import utils
 from enum import Enum
 from heapq import heappush, heappop

@@ -1,11 +1,15 @@
+'''
+Author: Wojciech Maciejewski
+Problem: Sokoban
+'''
+
 import numpy as np
 import sokoban
 import map_generation
 import matplotlib.pyplot as plt
 import json
-import time
 
-def get_maps_for_statistics(output_file, n_maps=10000):
+def get_maps_for_statistics(output_file, n_maps=1000):
     d = {}
     for i in range(n_maps):
         width = 0
@@ -13,8 +17,8 @@ def get_maps_for_statistics(output_file, n_maps=10000):
         good_direction_prob = np.random.random()
         floor_noise_prob = np.random.random()
         while width * height < 3 or (width == 2 and height == 2):
-            width = np.random.randint(1, 51)
-            height = np.random.randint(1, 51)
+            width = np.random.randint(1, 31)
+            height = np.random.randint(1, 31)
         m = map_generation.generate_map(width, height, good_direction_prob=good_direction_prob, floor_noise_prob=floor_noise_prob)
         d[str(i)] = m
         
@@ -24,7 +28,7 @@ def get_maps_for_statistics(output_file, n_maps=10000):
 if __name__ == '__main__':
     path = 'maps_for_statistics.npz'
 
-    get_maps_for_statistics(path)
+    #get_maps_for_statistics(path)
 
     data = np.load(path)
     sizes = []

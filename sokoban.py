@@ -1,3 +1,8 @@
+'''
+Author: Christian Konopczyński
+Problem: Sokoban
+'''
+
 import numpy as np
 import search
 import map_generation as mg
