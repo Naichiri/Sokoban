@@ -99,8 +99,9 @@ class Program:
                     "1 file.npyz - solves for numpy arrays compressed in the specified .npyz file\n",
                     "2 [n] [width length] [gdp] [fnp] - solves for n width x length maps which are generated randomly.\n",
                     "\tBy default solves one 10x10 map. Additional parameters tweak map generation, details in readme\n",
-                    "3 [n] [min_size max_size] [gdp] [fnp] - solves for n maps with sizes interpolated lineary between min_size x min_size and max_size x max_size \
-					   which are generated randomly. By default solves one 3x3 map. Additional parameters tweak map generation, details in readme\n")
+                    "3 [n] [min_size max_size] [gdp] [fnp] - solves for n maps with sizes interpolated lineary\n",
+                    "\tbetween min_size x min_size and max_size x max_size which are generated randomly. \n",
+                    "\tBy default solves one 3x3 map. Additional parameters tweak map generation, details in readme\n")
         else:
             print("ERROR: Unknown parameter, try running as:", sys.argv[0], "-help")
         return
