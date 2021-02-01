@@ -1,5 +1,5 @@
 '''
-Author: Wojciech Maciejewski
+Author: Wojciech Maciejewski, Christian Konopczyński
 Problem: Sokoban
 '''
 

@@ -65,6 +65,6 @@ if __name__ == '__main__':
     path_lenghts = [len(output) for output in outputs]
     plt.scatter(path_lenghts, times)
     temp = []
-    for path_len, b_factor in zip (path_lenghts, branchning_factors):
-        temp.append(np.power(b_factor, path_len))
-    plt.scatter(temp, times)
+    for size in sizes:
+        temp.append(size ** 2 * np.log(size))
+    plt.scatter(temp, gen_nodes_numbers)

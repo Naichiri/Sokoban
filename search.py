@@ -1,5 +1,5 @@
 '''
-Author: Christian Konopczyński
+Authors: Christian Konopczyński, Wojciech Maciejewski
 Problem: Sokoban
 '''
 
