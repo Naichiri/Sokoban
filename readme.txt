@@ -26,17 +26,18 @@ Sposoby uruchomienia programu:
     python program.py -help - wyświetlenie listy możliwych parametrów i krótkie objaśnienie.
     python program.py 1 file.npz - rozwiązanie wszystkich map w pliku uprzednio tam zamieszczonych za pomocą numpy.savez("file.npz", ...)
     python program.py 2 [n] [width length] [gdp] [fnp] - rozwiązanie n map o wielkości width x length wygenerowanych przez program na podstawie
-                                                dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability
-                                                Domyślne wartości parametrów: n = 1, width = 10, height = 10, gdp = 0.5, fnp = 0.7
-						Ograniczenia: 2 <= width, height <= 100, min_size != 2 i max_size != 2 (jednocześnie)
-							0.0 <= gdb <= 1.0, 0.0 <= fnp <= 1.0
-						Dodatkowo: Jeśli width == 'random' lub width == 'r', to wartość width jest dla każdej mapy losowana z przedziału [3, 100]. 
-							Analogicznie dla height == 'random' lub height == 'r'
+            dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability
+        Domyślne wartości parametrów: n = 1, width = 10, height = 10, gdp = 0.5, fnp = 0.7
+		Ograniczenia: 2 <= width, height <= 100, min_size != 2 i max_size != 2 (jednocześnie)
+		0.0 <= gdb <= 1.0, 0.0 <= fnp <= 1.0
+		Dodatkowo: Jeśli width == 'random' lub width == 'r', to wartość width jest dla każdej mapy losowana z przedziału [3, 100]. 
+			Analogicznie dla height == 'random' lub height == 'r'
+        Przy zwracaniu wyniku w oddzielnym oknie wyświetlana jest mapa magazynu reprezentowana za pomocą kolorowanych kwadratów.
     python program.py 3 [n] [min_size max_size] [gdp] [fnp] - rozwiązanie n map o wielkościach interplowanych liniowo między min_size x min_size, a max_size x max_size
-						wygenerowanych przez program na podstawie dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability.
-						Na wyjściu pokazuje tabelkę zgodną z wymaganiami.
-                                                Domyślne wartości parametrów: n = 1, min_size= 3, max_size = 100, gdp = 0.5, fnp = 0.7
-						Ograniczenia: 2 <= min_size, max_size <= 100, min_size < max_size, min_size != 2 i max_size != 2 (jednocześnie)
+		    wygenerowanych przez program na podstawie dodatkowych parametrów: gdp - good direction probability, fnp - floor noise probability.
+	    Na wyjściu pokazuje tabelkę zgodną z wymaganiami.
+        Domyślne wartości parametrów: n = 1, min_size= 3, max_size = 100, gdp = 0.5, fnp = 0.7
+	    Ograniczenia: 2 <= min_size, max_size <= 100, min_size < max_size, min_size != 2 i max_size != 2 (jednocześnie)
 							0.0 <= gdb <= 1.0, 0.0 <= fnp <= 1.0
 
 Dane wejściowe:
